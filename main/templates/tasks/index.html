@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>To-Do List</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .container {
+      background: rgba(255, 255, 255, 0.04);
+      backdrop-filter: blur(14px);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 24px;
+      padding: 40px;
+      width: 100%;
+      max-width: 550px;
+      box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5);
+    }
+
+    .header {
+      margin-bottom: 30px;
+      text-align: center;
+    }
+
+    h1 {
+      color: #e0e1dd;
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      color: rgba(224, 225, 221, 0.4);
+      font-size: 0.9rem;
+    }
+
+    /* Форма добавления */
+    .add-form {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 25px;
+    }
+
+    .add-form input {
+      flex: 1;
+      padding: 14px 18px;
+      border: 2px solid rgba(255, 255, 255, 0.08);
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.04);
+      color: #e0e1dd;
+      font-size: 0.95rem;
+      outline: none;
+      transition: all 0.3s ease;
+    }
+
+    .add-form input:focus {
+      border-color: #7c4dff;
+      box-shadow: 0 0 20px rgba(124, 77, 255, 0.2);
+    }
+
+    .add-form input::placeholder {
+      color: rgba(224, 225, 221, 0.25);
+    }
+
+    .btn {
+      padding: 14px 22px;
+      border: none;
+      border-radius: 14px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      white-space: nowrap;
+      color: white;
+    }
+
+    .btn-add {
+      background: #7c4dff;
+    }
+
+    .btn-add:hover {
+      background: #651fff;
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(124, 77, 255, 0.3);
+    }
+
+    /* Список задач */
+    .task-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .task-item {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 14px;
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      transition: all 0.3s ease;
+    }
+
+    .task-item:hover {
+      background: rgba(124, 77, 255, 0.05);
+      border-color: rgba(124, 77, 255, 0.15);
+    }
+
+    .task-item.completed {
+      opacity: 0.5;
+    }
+
+    .task-item.completed .task-text {
+      text-decoration: line-through;
+      color: rgba(224, 225, 221, 0.3);
+    }
+
+    /* Кнопка выполнения */
+    .toggle-btn {
+      width: 24px;
+      height: 24px;
+      border: 2px solid rgba(255, 255, 255, 0.25);
+      border-radius: 7px;
+      background: transparent;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .toggle-btn:hover {
+      border-color: #7c4dff;
+    }
+
+    .task-item.completed .toggle-btn {
+      background: #7c4dff;
+      border-color: #7c4dff;
+    }
+
+    .task-item.completed .toggle-btn::after {
+      content: '✓';
+      color: white;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    /* Текст задачи */
+    .task-text {
+      flex: 1;
+      color: #e0e1dd;
+      font-size: 0.95rem;
+      word-break: break-word;
+    }
+
+    /* Дата */
+    .task-date {
+      color: rgba(224, 225, 221, 0.25);
+      font-size: 0.75rem;
+      flex-shrink: 0;
+    }
+
+    /* Кнопка удаления */
+    .btn-delete {
+      background: none;
+      border: none;
+      color: rgba(255, 255, 255, 0.2);
+      font-size: 1.2rem;
+      cursor: pointer;
+      padding: 4px 8px;
+      transition: all 0.3s ease;
+      line-height: 1;
+      flex-shrink: 0;
+    }
+
+    .btn-delete:hover {
+      color: #e94560;
+      transform: scale(1.2);
+    }
+
+    /* Нижняя панель */
+    .footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 25px;
+      padding-top: 20px;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .counter {
+      color: rgba(224, 225, 221, 0.4);
+      font-size: 0.85rem;
+    }
+
+    .counter span {
+      color: #7c4dff;
+      font-weight: 700;
+    }
+
+    .btn-clear {
+      background: none;
+      border: 1px solid rgba(233, 69, 96, 0.3);
+      color: #e94560;
+      padding: 8px 16px;
+      border-radius: 10px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .btn-clear:hover {
+      background: rgba(233, 69, 96, 0.1);
+      border-color: #e94560;
+    }
+
+    /* Пустое состояние */
+    .empty {
+      text-align: center;
+      padding: 50px 20px;
+      color: rgba(224, 225, 221, 0.2);
+      list-style: none;
+    }
+
+    .empty-icon {
+      font-size: 3.5rem;
+      margin-bottom: 18px;
+      opacity: 0.7;
+    }
+
+    .empty-text {
+      font-size: 1.1rem;
+      font-style: italic;
+      margin-bottom: 8px;
+    }
+
+    .empty-subtext {
+      font-size: 0.85rem;
+      color: rgba(224, 225, 221, 0.12);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+
+    <div class="header">
+      <h1>✅ To-Do List</h1>
+      <p class="subtitle">Управляй своими задачами</p>
+    </div>
+
+    <form class="add-form" method="POST" action="{% url 'task_add' %}">
+      {% csrf_token %}
+      <input type="text" name="title" placeholder="Что нужно сделать?" required>
+      <button type="submit" class="btn btn-add">Добавить</button>
+    </form>
+
+    <ul class="task-list">
+      {% for task in tasks %}
+      <li class="task-item {% if task.completed %}completed{% endif %}">
+    
+        <!-- Кнопка отметки выполнения -->
+        <form method="POST" action="{% url 'task_toggle' task.pk %}" style="display: inline;">
+          {% csrf_token %}
+          <button type="submit" class="toggle-btn"></button>
+        </form>
+    
+        <span class="task-text">{{ task.title }}</span>
+        <span class="task-date">{{ task.created_at|date:"d.m" }}</span>
+    
+        <!-- Кнопка удаления -->
+        <form method="POST" action="{% url 'task_delete' task.pk %}" style="display: inline;">
+          {% csrf_token %}
+          <button type="submit" class="btn-delete">✕</button>
+        </form>
+    
+      </li>
+      {% empty %}
+      <li class="empty">
+        <div class="empty-icon">📋</div>
+        <div class="empty-text">Пока нет задач</div>
+        <div class="empty-subtext">Добавь первую задачу</div>
+      </li>
+      {% endfor %}
+    </ul>
+
+    <div class="footer">
+      <p class="counter">
+        Осталось: <span>{{active_tasks|length}} задач</span>
+      </p>
+      <form method='POST' action="{% url 'task_completed_delete' %}">
+        {% csrf_token %}
+        <button type='submit' class="btn-clear">Очистить выполненные</button>
+      </form>
+    </div>
+
+  </div>
+</body>
+
+</html>
